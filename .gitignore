@@ -1,0 +1,19 @@
+# Dépendances Node.js
+node_modules/
+package-lock.json
+
+# Fichiers générés par la compilation TypeScript
+dist/
+
+# Fichiers sensibles
+.env*
+.envsync.key
+
+# Fichiers de cache et temporaires
+*.log
+*.cache
+.DS_Store
+
+# Fichiers de configuration locale
+.vscode/
+.idea/

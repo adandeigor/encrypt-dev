@@ -1,0 +1,7 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+if git diff --cached --name-only | grep -E '\.env'; then
+  echo "Erreur : Fichier .env détecté dans le commit. Utilisez 'npx envsync-cli encrypt'."
+  exit 1
+fi
