@@ -1,17 +1,14 @@
 export interface Config {
-    profiles: {
-      [key: string]: ProfileConfig;
-    };
-  }
-  
-  export interface ProfileConfig {
     source: string;
     encrypted: string;
-    encryption: 'aes-256-cbc';
-    key_hint: string;
+    encryption: string;
+    key_hint?: string;
+    profiles?: Record<string, Omit<Config, 'profiles'>>;
   }
   
-  export interface CommandOptions {
-    profile?: string;
-    all?: boolean;
+  export class EnvsyncError extends Error {
+    constructor(message: string, public readonly code: string) {
+      super(message);
+      this.name = 'EnvsyncError';
+    }
   }

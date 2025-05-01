@@ -1,19 +1,32 @@
-import { encryptFile, decryptFile } from '../src/utils/crypto';
+import { encrypt, decrypt } from '../src/utils/crypto';
+import { errors } from '../src/utils/error';
 
 describe('Crypto', () => {
-  it('should encrypt and decrypt correctly', async () => {
-    const content = 'TEST=123';
-    const key = 'ma-cle-secrete';
-    const encrypted = await encryptFile(content, key);
-    const decrypted = await decryptFile(encrypted, key);
-    expect(decrypted).toBe(content);
+  it('encrypts and decrypts correctly', () => {
+    const data = 'KEY=VALUE';
+    const passphrase = 'test';
+    const encrypted = encrypt(data, passphrase);
+    const decrypted = decrypt(encrypted, passphrase);
+    expect(decrypted).toBe(data);
   });
 
-  it('should throw error with wrong key', async () => {
-    const content = 'TEST=123';
-    const key = 'ma-cle-secrete';
-    const wrongKey = 'mauvaise-cle';
-    const encrypted = await encryptFile(content, key);
-    await expect(decryptFile(encrypted, wrongKey)).rejects.toThrow('Intégrité du fichier compromise.');
+  it('throws on invalid passphrase', () => {
+    const data = 'KEY=VALUE';
+    const passphrase = 'test';
+    const encrypted = encrypt(data, passphrase);
+    expect(() => decrypt(encrypted, 'wrong')).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining('Decryption failed'),
+        code: 'DECRYPTION_FAILED',
+      })
+    );
+  });
+
+  it('throws on tampered data', () => {
+    const data = 'KEY=VALUE';
+    const passphrase = 'test';
+    const encrypted = encrypt(data, passphrase);
+    encrypted.hash = 'tampered';
+    expect(() => decrypt(encrypted, passphrase)).toThrow(errors.INTEGRITY_CHECK_FAILED());
   });
 });

@@ -1,0 +1,6 @@
+{
+  "source": ".env",
+  "encrypted": ".encryptenv",
+  "encryption": "aes-256-cbc",
+  "key_hint": "example"
+}

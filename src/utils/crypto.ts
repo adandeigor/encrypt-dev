@@ -1,44 +1,56 @@
-import crypto from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, createHash, pbkdf2Sync } from 'crypto';
+import { errors } from './error';
+import { EnvsyncError } from '../types';
 
-async function encryptFile(content: string, passphrase: string): Promise<string> {
-  const iv = crypto.randomBytes(16);
-  const salt = crypto.randomBytes(16);
-  const key = crypto.pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
-  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-  let encrypted = cipher.update(content, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  const hash = crypto.createHash('sha256').update(encrypted, 'utf8').digest('hex');
-  return Buffer.concat([
-    iv,
-    salt,
-    Buffer.from(hash, 'hex'),
-    Buffer.from(encrypted, 'hex')
-  ]).toString('base64');
+export interface EncryptedData {
+  iv: string;
+  salt: string;
+  hash: string;
+  content: string;
 }
 
-async function decryptFile(encrypted: string, passphrase: string): Promise<string> {
-  const buffer = Buffer.from(encrypted, 'base64');
-  const iv = buffer.slice(0, 16);
-  const salt = buffer.slice(16, 32);
-  const hash = buffer.slice(32, 64).toString('hex'); // SHA256 hash = 32 bytes
-  const data = buffer.slice(64).toString('hex');
-  const computedHash = crypto.createHash('sha256').update(data, 'utf8').digest('hex');
-  if (hash !== computedHash) {
-    throw new Error('Intégrité du fichier compromise.');
-  }
-  const key = crypto.pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+export function encrypt(data: string, passphrase: string): EncryptedData {
   try {
-    let decrypted = decipher.update(data, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
-  } catch (error) {
-    throw new Error('Intégrité du fichier compromise.');
+    const salt = randomBytes(16);
+    const key = pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
+    const iv = randomBytes(16);
+    const cipher = createCipheriv('aes-256-cbc', key, iv);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    const hash = createHash('sha256').update(data).digest('hex');
+
+    return {
+      iv: iv.toString('hex'),
+      salt: salt.toString('hex'),
+      hash,
+      content: encrypted,
+    };
+  } catch (err) {
+    throw errors.ENCRYPTION_FAILED(err instanceof Error ? err.message || 'Encryption error' : 'Unknown error');
   }
 }
 
-function generateRandomKey(): string {
-  return crypto.randomBytes(32).toString('hex');
-}
+export function decrypt(data: EncryptedData, passphrase: string): string {
+  try {
+    const salt = Buffer.from(data.salt, 'hex');
+    const key = pbkdf2Sync(passphrase, salt, 100000, 32, 'sha256');
+    const iv = Buffer.from(data.iv, 'hex');
+    const decipher = createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(data.content, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
 
-export { encryptFile, decryptFile, generateRandomKey };
+    const hash = createHash('sha256').update(decrypted).digest('hex');
+    if (hash !== data.hash) {
+      throw errors.INTEGRITY_CHECK_FAILED();
+    }
+
+    return decrypted;
+  } catch (err) {
+    if (err instanceof EnvsyncError) {
+      throw err;
+    }
+    const errorMessage = err instanceof Error ? err.message || 'Bad decrypt' : 'Unknown error';
+    throw errors.DECRYPTION_FAILED(errorMessage);
+  }
+}
