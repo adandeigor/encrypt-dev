@@ -1,5 +1,5 @@
 {
-    "name": "envsync-cli",
+    "name": "envcrypt-dev",
     "version": "1.0.1",
     "description": "CLI tool for encrypting and managing environment files",
     "main": "dist/cli.js",
