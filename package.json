@@ -1,6 +1,6 @@
 {
     "name": "envsync-cli",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "CLI tool for encrypting and managing environment files",
     "main": "dist/cli.js",
     "bin": {
@@ -45,7 +45,8 @@
         "./docs/README.md",
         "LICENSE",
         "./docs/CONTRIBUTING.md",
-        "docs/**/*"],
+        "docs/**/*"
+    ],
     "bugs": {
         "url": "https://github.com/adandeigor/envsync-cli/issues"
     },
