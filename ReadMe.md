@@ -1,6 +1,6 @@
-# envsync-cli
+# encrypt-dev
 
-`envsync-cli` est un outil en ligne de commande pour gérer et partager des variables d'environnement de manière sécurisée. Il chiffre un fichier `.env` dans un fichier `.encryptenv` (avec AES-256-CBC) que vous pouvez inclure dans votre dépôt Git. Les développeurs accèdent aux variables en déchiffrant `.encryptenv` avec une passphrase sécurisée, partagée via un QR code ou un gestionnaire de secrets. La commande `rotate-key` permet de changer la passphrase en cas de compromission, sans modifier les variables.
+`encrypt-dev` est un outil en ligne de commande pour gérer et partager des variables d'environnement de manière sécurisée. Il chiffre un fichier `.env` dans un fichier `.encryptenv` (avec AES-256-CBC) que vous pouvez inclure dans votre dépôt Git. Les développeurs accèdent aux variables en déchiffrant `.encryptenv` avec une passphrase sécurisée, partagée via un QR code ou un gestionnaire de secrets. La commande `rotate-key` permet de changer la passphrase en cas de compromission, sans modifier les variables.
 
 ## Table des matières
 
@@ -40,7 +40,7 @@
 2. **Installer globalement** (recommandé pour une utilisation en CLI) :
 
    ```bash
-   npm install -g envsync-cli
+   npm install -g encrypt-dev
    ```
 
 3. **Vérifier l'installation** :
@@ -54,7 +54,7 @@
 4. **Installer localement** (optionnel, pour un projet spécifique) :
 
    ```bash
-   npm install envsync-cli
+   npm install encrypt-dev
    ```
 
    - Exécutez les commandes via `npx` :
@@ -65,7 +65,7 @@
 
 ## Configuration initiale
 
-Configurez `envsync-cli` dans votre projet pour gérer les variables d'environnement.
+Configurez `encrypt-dev` dans votre projet pour gérer les variables d'environnement.
 
 1. **Créer un fichier** `.env` :
 
@@ -223,10 +223,10 @@ Le fichier `.encryptenv` est inclus dans le dépôt Git pour partager les variab
 
 ### Étapes pour un développeur
 
-1. **Installer** `envsync-cli` :
+1. **Installer** `encrypt-dev` :
 
    ```bash
-   npm install -g envsync-cli
+   npm install -g encrypt-dev
    ```
 
 2. **Cloner le projet** :
@@ -323,14 +323,14 @@ En cas de compromission de la passphrase :
 
 - **Erreur :** `File not found` : Vérifiez la présence de `.encryptenv` et `envsync.config.json`.
 - **Erreur :** `Decryption failed` : Passphrase incorrecte. Contactez l'équipe.
-- **Commande** `envsync` **introuvable** : Installez globalement avec `npm install -g envsync-cli`.
+- **Commande** `envsync` **introuvable** : Installez globalement avec `npm install -g encrypt-dev`.
 - **Fichiers non synchronisés** : Exécutez `envsync status` et mettez à jour avec `encrypt` ou `decrypt`.
 
 Pour plus d'aide, ouvrez une issue sur GitHub.
 
 ## Contribuer
 
-1. Forkez le dépôt : `https://github.com/adandeigor/envsync-cli`.
+1. Forkez le dépôt : `https://github.com/adandeigor/encrypt-dev`.
 2. Créez une branche : `git checkout -b feature/<nom>`.
 3. Ajoutez des tests et exécutez : `npm test`.
 4. Soumettez une pull request.
