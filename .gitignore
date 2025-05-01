@@ -1,4 +1,7 @@
 node_modules/
 dist/
 .env
+.encryptenv
+envsync.config.json
+envsync.config.json.example
 .envsync.key
